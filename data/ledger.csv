@@ -1,0 +1,9 @@
+event_id,kind,original_id,settlement_id,currency,amount
+p1,payment,,S1,USD,100.00
+p2,payment,,S1,USD,50.00
+r1,refund,p1,S1,USD,20.00
+f1,fee,,S1,USD,3.00
+p3,payment,,S2,JPY,1000
+f2,fee,,S2,JPY,20
+p4,payment,,S3,EUR,10.00
+p1,payment,,S1,USD,100.0

@@ -1,0 +1,5 @@
+[
+ {"settlement_id":"S1","currency":"USD","amount":"127.00"},
+ {"settlement_id":"S2","currency":"JPY","amount":"979"},
+ {"settlement_id":"S4","currency":"USD","amount":"5.00"}
+]
