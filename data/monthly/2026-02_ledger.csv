@@ -1,0 +1,4 @@
+event_id,kind,original_id,settlement_id,currency,amount
+r1,refund,p1,SM,USD,30.00
+r2,refund,p1,SM,USD,20.00
+f2,fee,,SM,USD,1.00

@@ -1,0 +1,3 @@
+event_id,kind,original_id,settlement_id,currency,amount
+p1,payment,,SM,USD,100.00
+f1,fee,,SM,USD,3.00
