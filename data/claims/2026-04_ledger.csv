@@ -1,0 +1,14 @@
+event_id,kind,original_id,settlement_id,currency,amount
+p1,payment,,SA,USD,100.00
+p2,payment,,SB,USD,60.00
+p3,payment,,SZ,USD,10.00
+r1,refund,p3,SZ,USD,10.00
+p4,payment,,SN,USD,10.00
+f1,fee,,SN,USD,12.00
+p5,payment,,SJ,JPY,500
+p6,payment,,SD,USD,30.00
+p7,payment,,SE,USD,30.00
+p8,payment,,SG,USD,1.00
+p9,payment,,SH,USD,1.00
+p10,payment,,SI,USD,1.00
+p11,payment,,SK,USD,1.00

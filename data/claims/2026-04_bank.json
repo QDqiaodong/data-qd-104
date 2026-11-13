@@ -1,0 +1,14 @@
+[
+ {"settlement_id": "SA", "currency": "USD", "amount": "100.00"},
+ {"settlement_id": "SB", "currency": "USD", "amount": "50.00"},
+ {"settlement_id": "SZ", "currency": "USD", "amount": "0.00"},
+ {"settlement_id": "SN", "currency": "USD", "amount": "-2.00"},
+ {"settlement_id": "SJ", "currency": "JPY", "amount": "500"},
+ {"settlement_id": "SD", "currency": "USD", "amount": "30.00"},
+ {"settlement_id": "SE", "currency": "USD", "amount": "30.00"},
+ {"settlement_id": "SG", "currency": "USD", "amount": "1.00"},
+ {"settlement_id": "SH", "currency": "USD", "amount": "1.00"},
+ {"settlement_id": "SI", "currency": "USD", "amount": "1.00"},
+ {"settlement_id": "SK", "currency": "USD", "amount": "1.00"},
+ {"settlement_id": "SM", "currency": "USD", "amount": "5.00"}
+]
