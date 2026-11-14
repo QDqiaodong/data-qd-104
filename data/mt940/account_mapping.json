@@ -1,0 +1,7 @@
+{
+  "mappings": [
+    {"account": "12340001", "currency": "USD", "settlement_id": "S1"},
+    {"account": "12340002", "currency": "JPY", "settlement_id": "S2"},
+    {"account": "12340003", "currency": "EUR", "settlement_id": "S3"}
+  ]
+}

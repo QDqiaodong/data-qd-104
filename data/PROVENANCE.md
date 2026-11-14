@@ -19,3 +19,13 @@ USD, JPY and EUR. `receipts.csv` and `relations.csv` are synthetic bank
 receipts and allowed receipt-to-group relations, including a greedy-claim
 counterexample and a relation that is legal but unused in every optimum. They
 are not real bank receipts, customers or settlement data.
+
+The `mt940/` files (`capture_part1.mt940`, `capture_part2.mt940`,
+`account_mapping.json`) are original synthetic inputs for the offline strict
+MT940 collection entry point. The two captures deliberately arrive shuffled:
+they span three fictional accounts, three currencies (USD/EUR/JPY), one
+two-page USD statement with an intermediate `M`/`M` boundary, multi-line `:86:`
+narrative, all four debit/credit marks (`C`, `D`, `RC`, `RD`), a debit
+opening/closing balance and a zero-net JPY statement. The mapping file binds
+each account/currency pair to a fictional settlement ID. They describe no real
+bank, account, statement or customer and contain no credentials or live data.

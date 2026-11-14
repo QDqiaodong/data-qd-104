@@ -8,6 +8,8 @@
 
 新增：独立回单认领区间分析（`python -m settlement_audit.claims`，见 `docs/claims_contract.md`）。银行回单缺少结算编号时，按文件顺序认领会挤占别组唯一可用资金；本分析只读一个已接收月份，按币种把回单供给、组需求和允许关系建成整数最大流网络，在**所有总额最大的方案**上给出每条关系与每个组的认领最小/最大值、达到端点的完整分配见证和最小割证据。它不改月度库、不改原对账结论，并明确说明各自最大值不能拼成同时成立的归属。
 
+新增：离线 MT940 分页对账单采集（`python -m settlement_audit.mt940`，见 `docs/mt940_contract.md`）。银行按页交来的对账单上，余额是结转核对数而非结算额；本入口严格校验标签顺序、20xx 日期、币种精度与每页/跨页平衡，按账户/币种/账单组装乱序多页，用显式 JSON 映射到结算 ID，汇总有符号交易净额生成旧入口可读的 `bank.json`，并同时原子发布逐页/逐笔审计 JSON，整批失败不留半套。
+
 ## 独立安装
 
 需要 Python >=3.11（先确认 python3 --version）。运行依赖全部为标准库。 构建工具也已固定版本。
@@ -76,6 +78,18 @@ python3 -m venv .venv
 
 内置合成场景：一月 p1 收款 100 USD、手续费 3 USD，银行 97 USD；二月两笔引用 p1 的退款 30+20 USD 与 1 USD 手续费，银行 -51 USD（两月同一 `settlement_id` 各自平衡）；三月再退 50 USD 后 p1 剩余本金为 0。二月历史报告始终显示累计已退 5000、剩余 5000 分，即使三月之后重放二月也字节不变。Python 调用为 `settlement_audit.monthly.ingest(...)` 与 `settlement_audit.monthly.report(...)`。月份归属、键作用域、累计退款、重放、历史余额与故障重跑规则见 `docs/monthly_contract.md`。
 
+## 离线 MT940 分页对账单采集（严格子集）
+
+银行交来的对账单按页拆开，页上的余额只是结转核对数，不能当作结算额。新增独立离线入口 `python -m settlement_audit.mt940`（仅标准库，见 `docs/mt940_contract.md`）：解析严格 MT940 子集（`:25:` 账户、`:28C:` 账单号/页号、`:60F/M:` 期初、`:61:` 逐笔借贷、可跨行 `:86:` 附言、`:62M/F:` 期末），拒绝未知标签、坏顺序和超精度；金额全部按现有币种精度做整数最小单位运算，不经 float，`C/RD` 为正、`D/RC` 为负，余额按 `C/D` 带符号。乱序、多账户、多账单、多文件按账户/币种/账单组装：页号从 1 连续、首尾 F 中间 M、相邻页日期与余额衔接、每页期初加有符号交易和等于期末；重复页即使等价也拒绝，缺页或失衡整批失败。账户/币种到结算 ID 用严格 JSON 显式映射，缺映射或多余映射都拒绝；按结算/币种汇总**交易净额**（零净额保留）生成旧入口可直接读取的 `bank.json`，并同时交付逐页/逐笔 `mt940_audit.json`（原文摘要、行号、附言、页内与跨页核对及汇总依据）。两文件在新目录中一次性原子发布，失败不留半套。
+
+```sh
+python -m settlement_audit.mt940 collect \
+  --mt940 data/mt940/capture_part1.mt940 data/mt940/capture_part2.mt940 \
+  --mapping data/mt940/account_mapping.json --output run/mt940_demo
+```
+
+随仓合成例覆盖手工可算的借贷与冲正（C/D/RD/RC）、跨页衔接、乱序、零净额与多币种；产出的 `bank.json` 可直接喂给原有全量入口，旧行为与旧输出保持不变。
+
 ## 结构与业务契约
 
 - `settlement_audit/money.py：货币精度和有符号最小单位`
@@ -85,10 +99,12 @@ python3 -m venv .venv
 - `settlement_audit/monthly.py：不可变月度导入、跨月退款预算、历史月报与月度 CLI`
 - `settlement_audit/flow.py：整数最大流与跨全部最大流的弧流量区间`
 - `settlement_audit/claims.py：只读回单认领区间分析、见证与最小割证据`
+- `settlement_audit/mt940.py：离线严格 MT940 分页采集、组装校验、显式映射、legacy bank.json 与逐页审计 JSON 原子发布`
 - `docs/contract.md`：全量模式完整字段/格式、业务键、边界、输出含义与当前约束。
 - `docs/monthly_contract.md`：月度模式月份序列、表结构粒度、重放、事务边界与 v2 报告结构。
 - `docs/claims_contract.md`：认领分析的两份 CSV 格式、排除原因、最大流模型、区间语义、见证与最小割、原子替换。
-- `data/`：小型确定性合成输入（含 `data/monthly/`）和 `PROVENANCE.md`。
+- `docs/mt940_contract.md`：MT940 严格子集标签与顺序、20xx 日期与币种精度、分页组装不变量、映射严格性、两份输出与原子发布。
+- `data/`：小型确定性合成输入（含 `data/monthly/`、`data/mt940/`）和 `PROVENANCE.md`。
 - `tests/`：真实业务值、重复运行、重要边界、并发与失败行为测试。
 
 当前范围：只分析合成离线导出，无真实账号/API/支付操作，无跨币种相加。全量模式为整批重算；月度模式提供不可变连续月份、跨月退款本金账与确定性历史报告；认领分析只读一个已接收月份并输出区间分析，不含模糊匹配或账务调整。
