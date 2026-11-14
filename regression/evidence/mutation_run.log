@@ -1,0 +1,43 @@
+# command: python3 tools/mutation_check.py --json regression/evidence/mutation_results.json
+# date: 2026-11-14T01:34:14Z
+# python: Python 3.11.2
+
+baseline full suite:       pass (82 tests)
+baseline regression module:pass (6 tests)
+mutation sign_refund_fee_added                sign               killed
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_duplicate_insertion_changes_only_duplicate_count
+    caught by: test_equivalent_amount_rewrite_preserves_business_invariants
+    caught by: test_generated_scenario_matches_independent_model
+    caught by: test_shuffle_preserves_business_invariants
+mutation currency_refund_parent_check_removed currency_isolation killed
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_contract_failures_preserve_previous_artifacts
+mutation dedup_equivalence_inverted           dedup              killed
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_duplicate_insertion_changes_only_duplicate_count
+    caught by: test_equivalent_amount_rewrite_preserves_business_invariants
+    caught by: test_generated_scenario_matches_independent_model
+    caught by: test_shuffle_preserves_business_invariants
+mutation missing_one_sided_groups_dropped     missing            killed
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_duplicate_insertion_changes_only_duplicate_count
+    caught by: test_equivalent_amount_rewrite_preserves_business_invariants
+    caught by: test_generated_scenario_matches_independent_model
+    caught by: test_shuffle_preserves_business_invariants
+mutation difference_direction_flipped         difference         killed
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_duplicate_insertion_changes_only_duplicate_count
+    caught by: test_equivalent_amount_rewrite_preserves_business_invariants
+    caught by: test_generated_scenario_matches_independent_model
+    caught by: test_shuffle_preserves_business_invariants
+mutation refund_full_repayment_rejected       refund_boundary    killed
+    caught by: test_contract_failures_preserve_previous_artifacts
+    caught by: test_duplicate_insertion_changes_only_duplicate_count
+    caught by: test_equivalent_amount_rewrite_preserves_business_invariants
+    caught by: test_generated_scenario_matches_independent_model
+    caught by: test_shuffle_preserves_business_invariants
+summary: {"all_mutations_caught": true, "baseline_ok": true, "existing_tests_unchanged": true, "invalid": 0, "killed": 6, "production_unchanged": true, "survived": 0, "timeout": 0, "total": 6}
+report written to regression/evidence/mutation_results.json
+exit=0

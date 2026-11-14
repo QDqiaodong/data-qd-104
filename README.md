@@ -90,6 +90,17 @@ python -m settlement_audit.mt940 collect \
 
 随仓合成例覆盖手工可算的借贷与冲正（C/D/RD/RC）、跨页衔接、乱序、零净额与多币种；产出的 `bank.json` 可直接喂给原有全量入口，旧行为与旧输出保持不变。
 
+## 全量对账回归防线与离线变异验证
+
+`tests/test_full_reconciliation_regression.py` 用固定种子生成器与独立预期模型（纯标准库，不调用被测解析/去重/对账函数生成答案）经真实全量 CLI 逐键核对 JSON、差异 CSV 与 SQLite 四表；覆盖三币种、跨结算退款、等价重复、零净额与单侧缺失，并对乱序、等价金额重写、重复插入区分业务不变量与来源摘要、重复计数的合理变化；非法退款与重复银行键失败时旧产物字节不变，失败自动保存输入、种子与重放命令。`tools/mutation_check.py` 在临时源码副本上逐个植入 6 个语义变异（符号、币种隔离、去重、缺失、差额、退款边界）并验证新测试逐个捕获；语法/导入失败与超时不算捕获。运行不改动生产代码与现有测试（哈希指纹随报告留存）。
+
+```sh
+python3 -m unittest discover -s tests                 # 基线（含新回归模块）
+python3 tools/mutation_check.py                       # 基线 + 全部变异，JSON 报告写入 run/mutation/results.json
+```
+
+详见 `docs/regression.md`；最近一次实际执行记录在 `regression/evidence/`。
+
 ## 结构与业务契约
 
 - `settlement_audit/money.py：货币精度和有符号最小单位`

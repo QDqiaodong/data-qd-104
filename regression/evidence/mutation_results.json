@@ -1,0 +1,253 @@
+{
+  "baseline": {
+    "full_suite": {
+      "command": "/usr/bin/python3 -m unittest discover -s tests",
+      "duration_s": 3.505,
+      "exit_code": 0,
+      "failed_tests": [],
+      "status": "pass",
+      "tests_run": 82,
+      "timed_out": false
+    },
+    "regression_module": {
+      "command": "SETTLEMENT_AUDIT_SRC=/workspace/project /usr/bin/python3 /workspace/project/tests/test_full_reconciliation_regression.py",
+      "duration_s": 0.396,
+      "exit_code": 0,
+      "failed_tests": [],
+      "status": "pass",
+      "tests_run": 6,
+      "timed_out": false
+    }
+  },
+  "existing_tests_after": {
+    "tests/test_claims.py": "302e3feaadda5dbfeb636261a1cd02dbec307f3159b2e20ec7bc3670cc8a7bc4",
+    "tests/test_monthly.py": "1c8eb10e4f8754b126d4470d7718f3b151ddce0bee0dfa6dfc26999bb2b051b5",
+    "tests/test_mt940.py": "581054fb6fb2589feea6b75aa1862f853cd619134fcb4fd6207782716756f07d",
+    "tests/test_settlement.py": "49e083d775c0a2e8aaa16fc69ab2fceb19f150cc2810c26b49a706c74cbf6a23"
+  },
+  "existing_tests_before": {
+    "tests/test_claims.py": "302e3feaadda5dbfeb636261a1cd02dbec307f3159b2e20ec7bc3670cc8a7bc4",
+    "tests/test_monthly.py": "1c8eb10e4f8754b126d4470d7718f3b151ddce0bee0dfa6dfc26999bb2b051b5",
+    "tests/test_mt940.py": "581054fb6fb2589feea6b75aa1862f853cd619134fcb4fd6207782716756f07d",
+    "tests/test_settlement.py": "49e083d775c0a2e8aaa16fc69ab2fceb19f150cc2810c26b49a706c74cbf6a23"
+  },
+  "existing_tests_unchanged": true,
+  "mutations": [
+    {
+      "category": "sign",
+      "file": "settlement_audit/reconcile.py",
+      "find": "record[\"minor\"]*(1 if record[\"kind\"]==\"payment\" else -1)",
+      "find_occurrences": 1,
+      "name": "sign_refund_fee_added",
+      "preflight": {
+        "command": "/usr/bin/python3 -c 'import settlement_audit.input,settlement_audit.reconcile,settlement_audit.pipeline,settlement_audit.money'",
+        "exit_code": 0,
+        "stderr_tail": ""
+      },
+      "rationale": "refunds and fees are added to the expected net instead of subtracted",
+      "replace": "record[\"minor\"]*(1 if record[\"kind\"]==\"payment\" else 1)",
+      "status": "killed",
+      "test_run": {
+        "duration_s": 0.305,
+        "exit_code": 1,
+        "failed_tests": [
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_duplicate_insertion_changes_only_duplicate_count",
+          "test_equivalent_amount_rewrite_preserves_business_invariants",
+          "test_generated_scenario_matches_independent_model",
+          "test_shuffle_preserves_business_invariants"
+        ],
+        "stderr_tail": "ation_regression.py\", line 340, in check_outputs\n    self.assertEqual(report[\"summary\"], model[\"summary\"])\nAssertionError: {'balanced': 2, 'groups': 11, 'unresolved': 9} != {'groups': 11, 'balanced': 6, 'unresolved': 5}\n- {'balanced': 2, 'groups': 11, 'unresolved': 9}\n?              ^                              ^\n\n+ {'balanced': 6, 'groups': 11, 'unresolved': 5}\n?              ^                              ^\n\n\n======================================================================\nFAIL: test_shuffle_preserves_business_invariants (__main__.FullReconciliationRegressionTests.test_shuffle_preserves_business_invariants)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 325, in wrapper\n    return fn(self)\n           ^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 445, in test_shuffle_preserves_business_invariants\n    base_report = self.run_valid(base_ledger, base_bank, model, events, bank, len(duplicates))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 340, in check_outputs\n    self.assertEqual(report[\"summary\"], model[\"summary\"])\nAssertionError: {'balanced': 2, 'groups': 11, 'unresolved': 9} != {'groups': 11, 'balanced': 6, 'unresolved': 5}\n- {'balanced': 2, 'groups': 11, 'unresolved': 9}\n?              ^                              ^\n\n+ {'balanced': 6, 'groups': 11, 'unresolved': 5}\n?              ^                              ^\n\n\n----------------------------------------------------------------------\nRan 6 tests in 0.264s\n\nFAILED (failures=5)\n",
+        "tests_run": 6,
+        "timed_out": false
+      }
+    },
+    {
+      "category": "currency_isolation",
+      "file": "settlement_audit/input.py",
+      "find": " or parent[\"currency\"]!=record[\"currency\"]",
+      "find_occurrences": 1,
+      "name": "currency_refund_parent_check_removed",
+      "preflight": {
+        "command": "/usr/bin/python3 -c 'import settlement_audit.input,settlement_audit.reconcile,settlement_audit.pipeline,settlement_audit.money'",
+        "exit_code": 0,
+        "stderr_tail": ""
+      },
+      "rationale": "a refund may reference an original payment of a different currency",
+      "replace": "",
+      "status": "killed",
+      "test_run": {
+        "duration_s": 0.392,
+        "exit_code": 1,
+        "failed_tests": [
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_contract_failures_preserve_previous_artifacts"
+        ],
+        "stderr_tail": "eback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 547, in test_contract_failures_preserve_previous_artifacts\n    self.assertEqual(self.last_result.returncode, 2,\nAssertionError: 0 != 2 : refund_cross_currency_parent exited 0: \n\n======================================================================\nFAIL: test_contract_failures_preserve_previous_artifacts (__main__.FullReconciliationRegressionTests.test_contract_failures_preserve_previous_artifacts) (case='refund_exceeds_payment')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 551, in test_contract_failures_preserve_previous_artifacts\n    self.assertEqual((self.out_dir / artifact).read_bytes(), before,\nAssertionError: b'{\\n[143 chars]r\": \"5b9d42c1a845a196cadcec049d19d3bfa59bd1896[3343 chars]n}\\n' != b'{\\n[143 chars]r\": \"77e5846f3c09a0c5333ef4625197b34ef4490d9f8[3332 chars]n}\\n' : refund_exceeds_payment modified reconciliation.json\n\n======================================================================\nFAIL: test_contract_failures_preserve_previous_artifacts (__main__.FullReconciliationRegressionTests.test_contract_failures_preserve_previous_artifacts) (case='duplicate_bank_key')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 551, in test_contract_failures_preserve_previous_artifacts\n    self.assertEqual((self.out_dir / artifact).read_bytes(), before,\nAssertionError: b'{\\n[143 chars]r\": \"5b9d42c1a845a196cadcec049d19d3bfa59bd1896[3343 chars]n}\\n' != b'{\\n[143 chars]r\": \"77e5846f3c09a0c5333ef4625197b34ef4490d9f8[3332 chars]n}\\n' : duplicate_bank_key modified reconciliation.json\n\n----------------------------------------------------------------------\nRan 6 tests in 0.353s\n\nFAILED (failures=3)\n",
+        "tests_run": 6,
+        "timed_out": false
+      }
+    },
+    {
+      "category": "dedup",
+      "file": "settlement_audit/input.py",
+      "find": "if previous!=record:raise",
+      "find_occurrences": 1,
+      "name": "dedup_equivalence_inverted",
+      "preflight": {
+        "command": "/usr/bin/python3 -c 'import settlement_audit.input,settlement_audit.reconcile,settlement_audit.pipeline,settlement_audit.money'",
+        "exit_code": 0,
+        "stderr_tail": ""
+      },
+      "rationale": "identical duplicates are rejected as conflicts while conflicting ids pass silently",
+      "replace": "if previous==record:raise",
+      "status": "killed",
+      "test_run": {
+        "duration_s": 0.166,
+        "exit_code": 1,
+        "failed_tests": [
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_duplicate_insertion_changes_only_duplicate_count",
+          "test_equivalent_amount_rewrite_preserves_business_invariants",
+          "test_generated_scenario_matches_independent_model",
+          "test_shuffle_preserves_business_invariants"
+        ],
+        "stderr_tail": "ression.py\", line 396, in test_generated_scenario_matches_independent_model\n    self.run_valid(ledger_text, bank_text, model, events, bank, len(duplicates))\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 333, in check_outputs\n    self.assertEqual(self.last_result.returncode, 0,\nAssertionError: 2 != 0 : CLI failed: reconciliation failed: conflicting ledger event identity\n\n======================================================================\nFAIL: test_shuffle_preserves_business_invariants (__main__.FullReconciliationRegressionTests.test_shuffle_preserves_business_invariants)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 325, in wrapper\n    return fn(self)\n           ^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 445, in test_shuffle_preserves_business_invariants\n    base_report = self.run_valid(base_ledger, base_bank, model, events, bank, len(duplicates))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 333, in check_outputs\n    self.assertEqual(self.last_result.returncode, 0,\nAssertionError: 2 != 0 : CLI failed: reconciliation failed: conflicting ledger event identity\n\n----------------------------------------------------------------------\nRan 6 tests in 0.122s\n\nFAILED (failures=5)\n",
+        "tests_run": 6,
+        "timed_out": false
+      }
+    },
+    {
+      "category": "missing",
+      "file": "settlement_audit/reconcile.py",
+      "find": "sorted(set(expected)|set(bank))",
+      "find_occurrences": 1,
+      "name": "missing_one_sided_groups_dropped",
+      "preflight": {
+        "command": "/usr/bin/python3 -c 'import settlement_audit.input,settlement_audit.reconcile,settlement_audit.pipeline,settlement_audit.money'",
+        "exit_code": 0,
+        "stderr_tail": ""
+      },
+      "rationale": "groups present on only one side vanish instead of being reported missing_*",
+      "replace": "sorted(set(expected)&set(bank))",
+      "status": "killed",
+      "test_run": {
+        "duration_s": 0.204,
+        "exit_code": 1,
+        "failed_tests": [
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_duplicate_insertion_changes_only_duplicate_count",
+          "test_equivalent_amount_rewrite_preserves_business_invariants",
+          "test_generated_scenario_matches_independent_model",
+          "test_shuffle_preserves_business_invariants"
+        ],
+        "stderr_tail": "onciliation_regression.py\", line 340, in check_outputs\n    self.assertEqual(report[\"summary\"], model[\"summary\"])\nAssertionError: {'balanced': 6, 'groups': 8, 'unresolved': 2} != {'groups': 11, 'balanced': 6, 'unresolved': 5}\n- {'balanced': 6, 'groups': 8, 'unresolved': 2}\n?                           ^                ^\n\n+ {'balanced': 6, 'groups': 11, 'unresolved': 5}\n?                           ^^                ^\n\n\n======================================================================\nFAIL: test_shuffle_preserves_business_invariants (__main__.FullReconciliationRegressionTests.test_shuffle_preserves_business_invariants)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 325, in wrapper\n    return fn(self)\n           ^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 445, in test_shuffle_preserves_business_invariants\n    base_report = self.run_valid(base_ledger, base_bank, model, events, bank, len(duplicates))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 340, in check_outputs\n    self.assertEqual(report[\"summary\"], model[\"summary\"])\nAssertionError: {'balanced': 6, 'groups': 8, 'unresolved': 2} != {'groups': 11, 'balanced': 6, 'unresolved': 5}\n- {'balanced': 6, 'groups': 8, 'unresolved': 2}\n?                           ^                ^\n\n+ {'balanced': 6, 'groups': 11, 'unresolved': 5}\n?                           ^^                ^\n\n\n----------------------------------------------------------------------\nRan 6 tests in 0.166s\n\nFAILED (failures=5)\n",
+        "tests_run": 6,
+        "timed_out": false
+      }
+    },
+    {
+      "category": "difference",
+      "file": "settlement_audit/reconcile.py",
+      "find": "delta=bank[key]-expected[key]",
+      "find_occurrences": 1,
+      "name": "difference_direction_flipped",
+      "preflight": {
+        "command": "/usr/bin/python3 -c 'import settlement_audit.input,settlement_audit.reconcile,settlement_audit.pipeline,settlement_audit.money'",
+        "exit_code": 0,
+        "stderr_tail": ""
+      },
+      "rationale": "difference = expected - bank instead of bank - expected",
+      "replace": "delta=expected[key]-bank[key]",
+      "status": "killed",
+      "test_run": {
+        "duration_s": 0.208,
+        "exit_code": 1,
+        "failed_tests": [
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_duplicate_insertion_changes_only_duplicate_count",
+          "test_equivalent_amount_rewrite_preserves_business_invariants",
+          "test_generated_scenario_matches_independent_model",
+          "test_shuffle_preserves_business_invariants"
+        ],
+        "stderr_tail": "tests/test_full_reconciliation_regression.py\", line 396, in test_generated_scenario_matches_independent_model\n    self.run_valid(ledger_text, bank_text, model, events, bank, len(duplicates))\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 349, in check_outputs\n    self.assertEqual(got[field], want[field], \"%s %s\" % (key, field))\nAssertionError: -42 != 42 : ('S10', 'EUR') difference_minor\n\n======================================================================\nFAIL: test_shuffle_preserves_business_invariants (__main__.FullReconciliationRegressionTests.test_shuffle_preserves_business_invariants)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 325, in wrapper\n    return fn(self)\n           ^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 445, in test_shuffle_preserves_business_invariants\n    base_report = self.run_valid(base_ledger, base_bank, model, events, bank, len(duplicates))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 349, in check_outputs\n    self.assertEqual(got[field], want[field], \"%s %s\" % (key, field))\nAssertionError: -42 != 42 : ('S10', 'EUR') difference_minor\n\n----------------------------------------------------------------------\nRan 6 tests in 0.172s\n\nFAILED (failures=5)\n",
+        "tests_run": 6,
+        "timed_out": false
+      }
+    },
+    {
+      "category": "refund_boundary",
+      "file": "settlement_audit/input.py",
+      "find": "if refunds[key]>parent[\"minor\"]:raise",
+      "find_occurrences": 1,
+      "name": "refund_full_repayment_rejected",
+      "preflight": {
+        "command": "/usr/bin/python3 -c 'import settlement_audit.input,settlement_audit.reconcile,settlement_audit.pipeline,settlement_audit.money'",
+        "exit_code": 0,
+        "stderr_tail": ""
+      },
+      "rationale": "a refund that exactly repays the original payment is rejected as over-refund",
+      "replace": "if refunds[key]>=parent[\"minor\"]:raise",
+      "status": "killed",
+      "test_run": {
+        "duration_s": 0.152,
+        "exit_code": 1,
+        "failed_tests": [
+          "test_contract_failures_preserve_previous_artifacts",
+          "test_duplicate_insertion_changes_only_duplicate_count",
+          "test_equivalent_amount_rewrite_preserves_business_invariants",
+          "test_generated_scenario_matches_independent_model",
+          "test_shuffle_preserves_business_invariants"
+        ],
+        "stderr_tail": "iation_regression.py\", line 396, in test_generated_scenario_matches_independent_model\n    self.run_valid(ledger_text, bank_text, model, events, bank, len(duplicates))\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 333, in check_outputs\n    self.assertEqual(self.last_result.returncode, 0,\nAssertionError: 2 != 0 : CLI failed: reconciliation failed: total refunds exceed payment\n\n======================================================================\nFAIL: test_shuffle_preserves_business_invariants (__main__.FullReconciliationRegressionTests.test_shuffle_preserves_business_invariants)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 325, in wrapper\n    return fn(self)\n           ^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 445, in test_shuffle_preserves_business_invariants\n    base_report = self.run_valid(base_ledger, base_bank, model, events, bank, len(duplicates))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 385, in run_valid\n    return self.check_outputs(model, events, bank, duplicate_rows,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/project/tests/test_full_reconciliation_regression.py\", line 333, in check_outputs\n    self.assertEqual(self.last_result.returncode, 0,\nAssertionError: 2 != 0 : CLI failed: reconciliation failed: total refunds exceed payment\n\n----------------------------------------------------------------------\nRan 6 tests in 0.116s\n\nFAILED (failures=5)\n",
+        "tests_run": 6,
+        "timed_out": false
+      }
+    }
+  ],
+  "platform": "Linux-6.12.76-linuxkit-aarch64-with-glibc2.36",
+  "production_files_after": {
+    "settlement_audit/__init__.py": "62d292790b2271a8723fe9deb9391a0bfc42439b51a2ff901e7a0a946b3f3b9b",
+    "settlement_audit/__main__.py": "15e2aa4ed22fb96d4330766c7cd46273e03aa324a077b92d9b65a961cd43674a",
+    "settlement_audit/claims.py": "35c88c957d550b263168c78ece82d4746ec16c86cb96e0384967f03972767a16",
+    "settlement_audit/flow.py": "47d8332b47b4ede2ba85869e041633ec5d29f06baf59a21056a5a3f294a7db3b",
+    "settlement_audit/input.py": "1a9027971cae144fcf8048ec7e0a72a0d20a24411b00b5a2192da5cfb463feff",
+    "settlement_audit/money.py": "7712f393eb26cb94fa5eb22ec3fa09bbc1785ec3bcd87bb760e7690b97999b9d",
+    "settlement_audit/monthly.py": "d4d34c8835a1cb25d57585e65f0d260cf311936fe06963d99da3b5ca53bc3812",
+    "settlement_audit/mt940.py": "4a17b350e07b79387f1a8d7a67b98754c2655526f7a046b9a3b259299ac05a9f",
+    "settlement_audit/pipeline.py": "2ba2f19799c71116b79664b273cec8178a3e5dde491571b7c8b6842b2e101503",
+    "settlement_audit/reconcile.py": "089c8c19933c643b39162c5a9d8b4d774d6cbb18777de5199236de460eb24af9"
+  },
+  "production_files_before": {
+    "settlement_audit/__init__.py": "62d292790b2271a8723fe9deb9391a0bfc42439b51a2ff901e7a0a946b3f3b9b",
+    "settlement_audit/__main__.py": "15e2aa4ed22fb96d4330766c7cd46273e03aa324a077b92d9b65a961cd43674a",
+    "settlement_audit/claims.py": "35c88c957d550b263168c78ece82d4746ec16c86cb96e0384967f03972767a16",
+    "settlement_audit/flow.py": "47d8332b47b4ede2ba85869e041633ec5d29f06baf59a21056a5a3f294a7db3b",
+    "settlement_audit/input.py": "1a9027971cae144fcf8048ec7e0a72a0d20a24411b00b5a2192da5cfb463feff",
+    "settlement_audit/money.py": "7712f393eb26cb94fa5eb22ec3fa09bbc1785ec3bcd87bb760e7690b97999b9d",
+    "settlement_audit/monthly.py": "d4d34c8835a1cb25d57585e65f0d260cf311936fe06963d99da3b5ca53bc3812",
+    "settlement_audit/mt940.py": "4a17b350e07b79387f1a8d7a67b98754c2655526f7a046b9a3b259299ac05a9f",
+    "settlement_audit/pipeline.py": "2ba2f19799c71116b79664b273cec8178a3e5dde491571b7c8b6842b2e101503",
+    "settlement_audit/reconcile.py": "089c8c19933c643b39162c5a9d8b4d774d6cbb18777de5199236de460eb24af9"
+  },
+  "production_unchanged": true,
+  "python": "3.11.2",
+  "regression_module": "tests/test_full_reconciliation_regression.py",
+  "schema_version": 1,
+  "source_root": "/workspace/project",
+  "started_at": "2026-11-14T01:34:14.348793+00:00",
+  "summary": {
+    "all_mutations_caught": true,
+    "baseline_ok": true,
+    "existing_tests_unchanged": true,
+    "invalid": 0,
+    "killed": 6,
+    "production_unchanged": true,
+    "survived": 0,
+    "timeout": 0,
+    "total": 6
+  },
+  "tool": "mutation_check",
+  "verdict": "pass"
+}
